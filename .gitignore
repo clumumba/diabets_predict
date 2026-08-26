@@ -1,0 +1,15 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*.pyo
+# Local Python environments and package metadata
+.venv/
+.project/
+venv/
+env/
+*.egg-info/
+# Runtime logs
+logs/*.log
+# OS metadata
+.DS_Store
+Thumbs.db

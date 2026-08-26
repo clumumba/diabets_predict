@@ -1,0 +1,37 @@
+stages:
+  collect:
+    cmd: python -m diabetesPredictor.data.data_collection
+    deps:
+      - Data/raw/data.csv
+      - src/diabetesPredictor/data/data_collection.py
+    outs:
+      - Data/processed/processed.csv
+  split:
+    cmd: python -m diabetesPredictor.data.data_prep
+    deps:
+      - Data/processed/processed.csv
+      - src/diabetesPredictor/data/data_prep.py
+    params:
+      - params.yml:
+          - data_prep
+    outs:
+      - Data/processed/train.csv
+      - Data/processed/test.csv
+  train:
+    cmd: python -m diabetesPredictor.model.model_build
+    deps:
+      - Data/processed/train.csv
+      - src/diabetesPredictor/model/model_build.py
+    params:
+      - params.yml:
+        - model
+    outs:
+      - models/model.pkl
+  evaluate:
+    cmd: python -m diabetesPredictor.model.model_eval
+    deps:
+      - Data/processed/test.csv
+      - models/model.pkl
+      - src/diabetesPredictor/model/model_eval.py
+    metrics:
+      - metrics/metrics.json

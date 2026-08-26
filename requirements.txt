@@ -1,0 +1,16 @@
+pandas
+numpy
+scikit-learn
+fastapi[standard]
+uvicorn[standard]
+mlflow
+dvc
+dvc-s3
+matplotlib
+python-box
+pyYAML
+tqdm
+ensure
+joblib
+types-PyYAML 
+ipykernel

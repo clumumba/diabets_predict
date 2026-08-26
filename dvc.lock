@@ -1,0 +1,84 @@
+schema: '2.0'
+stages:
+  collect:
+    cmd: python -m diabetesPredictor.data.data_collection
+    deps:
+    - path: Data/raw/data.csv
+      hash: md5
+      md5: 739f3c9177b13d1c15aa060046cfb023
+      size: 23872
+    - path: src/diabetesPredictor/data/data_collection.py
+      hash: md5
+      md5: 28e929e13a44a0b9ff7e7888091ae343
+      size: 937
+    outs:
+    - path: Data/processed/processed.csv
+      hash: md5
+      md5: 58e31c573524fd7d9454ad6f1dcf9af5
+      size: 24058
+  split:
+    cmd: python -m diabetesPredictor.data.data_prep
+    deps:
+    - path: Data/processed/processed.csv
+      hash: md5
+      md5: 58e31c573524fd7d9454ad6f1dcf9af5
+      size: 24058
+    - path: src/diabetesPredictor/data/data_prep.py
+      hash: md5
+      md5: c9ff6bf83cdbc871f1b0f0127a71cea6
+      size: 1558
+    params:
+      params.yml:
+        data_prep:
+          test_size: 0.2
+          random_state: 42
+    outs:
+    - path: Data/processed/test.csv
+      hash: md5
+      md5: 9431a3307cc8f2658bd9c9061121a619
+      size: 4873
+    - path: Data/processed/train.csv
+      hash: md5
+      md5: b8cb28fb618689e464a45d0ddf267056
+      size: 19283
+  train:
+    cmd: python -m diabetesPredictor.model.model_build
+    deps:
+    - path: Data/processed/train.csv
+      hash: md5
+      md5: b8cb28fb618689e464a45d0ddf267056
+      size: 19283
+    - path: src/diabetesPredictor/model/model_build.py
+      hash: md5
+      md5: 0742cfea370b643ef762da7c68c7c098
+      size: 2039
+    params:
+      params.yml:
+        model:
+          n_estimators: 100
+          random_state: 42
+    outs:
+    - path: models/model.pkl
+      hash: md5
+      md5: 6477513e115e0721ca72432cd7356d91
+      size: 1688296
+  evaluate:
+    cmd: python -m diabetesPredictor.model.model_eval
+    deps:
+    - path: Data/processed/test.csv
+      hash: md5
+      md5: 9431a3307cc8f2658bd9c9061121a619
+      size: 4873
+    - path: models/model.pkl
+      hash: md5
+      md5: 6477513e115e0721ca72432cd7356d91
+      size: 1688296
+    - path: src/diabetesPredictor/model/model_eval.py
+      hash: md5
+      md5: b802a4229419225c9c286afafb6d25a0
+      size: 1498
+    outs:
+    - path: metrics/metrics.json
+      hash: md5
+      md5: 379c68474b35d7bcb2ee0a406c56193c
+      size: 155
