@@ -27,7 +27,7 @@ def main() -> None:
         model = pickle.load(file)
     X_test = pd.read_csv(x_test_data)
     y_test = pd.read_csv(y_test_data).squeeze("columns")
-    metrics = evaluate_model(model, X_test, y_test)
+    metrics = evaluate_model(model, X_test, y_test) 
     metrics_path.parent.mkdir(parents=True, exist_ok=True)
     metrics_path.write_text(json.dumps(metrics, indent=2), encoding="utf-8")
     logger.info("Evaluation metrics saved to %s", metrics_path)
