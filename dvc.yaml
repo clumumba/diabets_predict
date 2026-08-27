@@ -15,12 +15,15 @@ stages:
       - params.yml:
           - data_prep
     outs:
-      - Data/processed/train.csv
-      - Data/processed/test.csv
+      - Data/processed/X_train.csv
+      - Data/processed/X_test.csv
+      - Data/processed/y_train.csv
+      - Data/processed/y_test.csv
   train:
     cmd: python -m diabetesPredictor.model.model_build
     deps:
-      - Data/processed/train.csv
+      - Data/processed/X_train.csv
+      - Data/processed/y_train.csv
       - src/diabetesPredictor/model/model_build.py
     params:
       - params.yml:
@@ -30,7 +33,8 @@ stages:
   evaluate:
     cmd: python -m diabetesPredictor.model.model_eval
     deps:
-      - Data/processed/test.csv
+      - Data/processed/X_test.csv
+      - Data/processed/y_test.csv
       - models/model.pkl
       - src/diabetesPredictor/model/model_eval.py
     metrics:
