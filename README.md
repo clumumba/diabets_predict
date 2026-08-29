@@ -19,7 +19,7 @@ Run locally:
 
 Build and run with Docker:
 1. Build the image:
-   docker build -t diabetes-api .
+   docker build -t diabetes-predictor:latest .
 2. Run the container:
    docker run -p 8000:8000 diabetes-api
 3. Open http://localhost:8000/docs
