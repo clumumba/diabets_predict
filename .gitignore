@@ -15,3 +15,6 @@ logs/*.log
 Thumbs.db
 .dvc/chache/
 .dvc/temp/
+.coverage
+TEST_SUMMARY.md
+TESTING.md
