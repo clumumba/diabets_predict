@@ -13,3 +13,5 @@ logs/*.log
 # OS metadata
 .DS_Store
 Thumbs.db
+.dvc/chache/
+.dvc/temp/
