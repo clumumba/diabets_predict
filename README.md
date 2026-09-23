@@ -57,7 +57,7 @@ $secureToken = Read-Host "DagsHub token" -AsSecureString
 $dagshubToken = [System.Net.NetworkCredential]::new("", $secureToken).Password
 dvc remote modify --local origin access_key_id $dagshubToken
 dvc remote modify --local origin secret_access_key $dagshubToken
-dvc push -r origin
+dvc push --remote origin
 Remove-Variable dagshubToken, secureToken
 ```
 

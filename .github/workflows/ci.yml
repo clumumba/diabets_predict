@@ -62,7 +62,7 @@ jobs:
           set -euo pipefail
           dvc remote modify --local origin access_key_id "$DAGSHUB_TOKEN"
           dvc remote modify --local origin secret_access_key "$DAGSHUB_TOKEN"
-          dvc pull -r origin
+          dvc pull --remote origin
           test -s models/model.pkl
 
       - name: Build image locally
