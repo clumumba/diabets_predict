@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: predictor
-        image: clumumba62/diabetes_predictor:latest
+        image: clumumba62/diabetes-predictor:latest
         ports:
         - containerPort: 8000
         resources:

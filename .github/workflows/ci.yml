@@ -21,7 +21,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
-          python -m pip install dvc
 
       - name: Run tests
         run: |
@@ -30,11 +29,74 @@ jobs:
   build-and-publish:
     needs: Build-and-Install
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     env:
       IMAGE_NAME: clumumba62/diabetes-predictor
+      VERSION_TAG: 1.0.${{ github.run_number }}
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+
+      - name: Check DVC and Docker configuration
+        env:
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          : "${DAGSHUB_TOKEN:?Set the DAGSHUB_TOKEN GitHub secret}"
+
+      - name: Set up Python and DVC
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install project dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Restore DVC data and model artifacts
+        env:
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          dvc remote modify --local origin access_key_id "$DAGSHUB_TOKEN"
+          dvc remote modify --local origin secret_access_key "$DAGSHUB_TOKEN"
+          dvc pull -r origin
+          test -s models/model.pkl
+
+      - name: Build image locally
+        run: docker build --tag "$IMAGE_NAME:$VERSION_TAG" .
+
+      - name: Verify model-loaded health before publishing
+        run: |
+          set -euo pipefail
+          container_name=diabetes-predictor-smoke
+          cleanup() {
+            docker rm --force "$container_name" >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          docker run --detach --name "$container_name" \
+            --publish 127.0.0.1:18000:8000 "$IMAGE_NAME:$VERSION_TAG"
+
+          for attempt in $(seq 1 30); do
+            health="$(curl --fail --silent http://127.0.0.1:18000/health || true)"
+            if [[ "$health" == *'"model_loaded":true'* ]]; then
+              echo "Container is healthy: $health"
+              exit 0
+            fi
+
+            if [[ "$(docker inspect --format='{{.State.Running}}' "$container_name" 2>/dev/null || true)" != "true" ]]; then
+              docker logs "$container_name"
+              exit 1
+            fi
+            sleep 2
+          done
+
+          docker logs "$container_name"
+          echo "Container did not report a loaded model within 60 seconds." >&2
+          exit 1
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -42,18 +104,9 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWD }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:1.0.${{ github.run_number }}
-            ${{ env.IMAGE_NAME }}:latest
-
-
-
-
-
-
-        
+      - name: Publish verified image tags
+        run: |
+          set -euo pipefail
+          docker tag "$IMAGE_NAME:$VERSION_TAG" "$IMAGE_NAME:latest"
+          docker push "$IMAGE_NAME:$VERSION_TAG"
+          docker push "$IMAGE_NAME:latest"

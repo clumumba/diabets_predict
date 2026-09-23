@@ -7,3 +7,14 @@ venv/
 .git/
 .gitignore
 *.log
+.dvc/
+Data/
+*.dvc
+dvc.yaml
+dvc.lock
+params.yml
+tests/
+notebook/
+logs/
+output/
+tmp/

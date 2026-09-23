@@ -18,3 +18,4 @@ Thumbs.db
 .coverage
 TEST_SUMMARY.md
 TESTING.md
+output/
