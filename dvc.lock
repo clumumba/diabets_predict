@@ -72,8 +72,8 @@ stages:
     outs:
     - path: models/model.pkl
       hash: md5
-      md5: 48ce1694b3b49ab850ee249c7e1ec594
-      size: 1685729
+      md5: 6477513e115e0721ca72432cd7356d91
+      size: 1688296
   evaluate:
     cmd: python -m diabetesPredictor.model.model_eval
     deps:
@@ -87,8 +87,8 @@ stages:
       size: 471
     - path: models/model.pkl
       hash: md5
-      md5: 48ce1694b3b49ab850ee249c7e1ec594
-      size: 1685729
+      md5: 6477513e115e0721ca72432cd7356d91
+      size: 1688296
     - path: src/diabetesPredictor/model/model_eval.py
       hash: md5
       md5: dd1567e1d4a62d0bf4f54947be7c6b56
