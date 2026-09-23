@@ -91,8 +91,8 @@ stages:
       size: 1685729
     - path: src/diabetesPredictor/model/model_eval.py
       hash: md5
-      md5: 1b21c694224e9f9c66deaedf74f51f9c
-      size: 1438
+      md5: dd1567e1d4a62d0bf4f54947be7c6b56
+      size: 1439
     outs:
     - path: metrics/metrics.json
       hash: md5
