@@ -48,8 +48,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.IMAGE_NAME }}:1.0.${{ github.run_number }}:latest
-            
+            ${{ env.IMAGE_NAME }}:1.0.${{ github.run_number }}
+            ${{ env.IMAGE_NAME }}:latest
 
 
 
