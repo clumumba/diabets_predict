@@ -3,10 +3,13 @@ from pathlib import Path
 
 import pandas as pd
 import yaml
+import mlflow
+import mlflow.sklearn
 from sklearn.ensemble import RandomForestClassifier
 
 from diabetesPredictor import logger
 from diabetesPredictor.config.configuration import PROJECT_ROOT, model_path, x_train_data, y_train_data
+from diabetesPredictor.model.tracking import configure_mlflow
 
 
 def load_params(params_path: Path) -> dict[str, int]:
@@ -41,7 +44,13 @@ def main() -> None:
     params = load_params(PROJECT_ROOT / "params.yml")
     X_train = load_data(x_train_data)
     y_train = load_data(y_train_data).squeeze("columns")
-    model = train_model(X_train, y_train, **params)
+    configure_mlflow()
+    with mlflow.start_run(run_name="train-random-forest"):
+        mlflow.log_params(params)
+        mlflow.log_param("training_rows", len(X_train))
+        mlflow.log_param("feature_count", X_train.shape[1])
+        model = train_model(X_train, y_train, **params)
+        mlflow.sklearn.log_model(model, artifact_path="model")
     save_model(model, model_path)
     logger.info("Model trained and saved successfully to %s", model_path)
 

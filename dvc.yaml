@@ -25,6 +25,7 @@ stages:
       - Data/processed/X_train.csv
       - Data/processed/y_train.csv
       - src/diabetesPredictor/model/model_build.py
+      - src/diabetesPredictor/model/tracking.py
     params:
       - params.yml:
         - model
@@ -37,5 +38,6 @@ stages:
       - Data/processed/y_test.csv
       - models/model.pkl
       - src/diabetesPredictor/model/model_eval.py
+      - src/diabetesPredictor/model/tracking.py
     metrics:
       - metrics/metrics.json

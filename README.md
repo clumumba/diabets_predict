@@ -21,6 +21,29 @@ Run locally from the `dvc` directory:
    uvicorn main:app --reload --host 127.0.0.1 --port 8000
 5. Open http://127.0.0.1:8000/docs
 
+## DagsHub MLflow tracking
+
+The DVC `train` and `evaluate` stages log to the DagsHub MLflow experiment
+`diabetes-predictor`. Training records model parameters and uploads the trained
+scikit-learn model; evaluation records the held-out metrics. The default tracking
+endpoint uses the DagsHub repository configured by this project's DVC remote.
+Set these variables in the shell before running `dvc repro` (use a DagsHub token
+with write access; do not commit it):
+
+```powershell
+$env:MLFLOW_TRACKING_USERNAME = "cescidy"
+$secureToken = Read-Host "DagsHub access token" -AsSecureString
+$env:MLFLOW_TRACKING_PASSWORD = [System.Net.NetworkCredential]::new("", $secureToken).Password
+dvc repro
+Remove-Item Env:MLFLOW_TRACKING_PASSWORD
+Remove-Variable secureToken
+```
+
+You can point tracking at another DagsHub repository with `DAGSHUB_REPO_OWNER`
+and `DAGSHUB_REPO_NAME`, or set `MLFLOW_TRACKING_URI` to override the endpoint.
+Set `MLFLOW_EXPERIMENT_NAME` to change the experiment name. DagsHub also requires
+the authenticated user to have contributor access to the repository.
+
 Build and run with Docker:
 1. Build the image:
    docker build -t clumumba62/diabetes-predictor:latest .
